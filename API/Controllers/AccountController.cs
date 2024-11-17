@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using API.DTOs;
 using API.Exceptions;
 using API.Repositories.Interfaces;
+using API.Validators;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -14,10 +15,23 @@ namespace API.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
+        private readonly CreateAccountDtoValidator _createAccountValidator;
+        private readonly DepositDtoValidator _depositValidator;
+        private readonly TransferFundsDtoValidator _transferFundsValidator;
+        private readonly WithdrawDtoValidator _withdrawValidator;
 
-        public AccountController(IAccountService accountService)
+        public AccountController(
+            IAccountService accountService,
+            CreateAccountDtoValidator createAccountValidator,
+            DepositDtoValidator depositValidator,
+            TransferFundsDtoValidator transferFundsValidator,
+            WithdrawDtoValidator withdrawValidator)
         {
             _accountService = accountService;
+            _createAccountValidator = createAccountValidator;
+            _depositValidator = depositValidator;
+            _transferFundsValidator = transferFundsValidator;
+            _withdrawValidator = withdrawValidator;
         }
 
         [HttpGet]
@@ -44,10 +58,9 @@ namespace API.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateAccount(CreateAccountDto createAccountDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var validationResult = await _createAccountValidator.ValidateAsync(createAccountDto);
+            if (validationResult.IsValid == false)
+                return BadRequest(validationResult.Errors);
 
             try
             {
@@ -67,10 +80,9 @@ namespace API.Controllers
         [HttpPost("transfer")]
         public async Task<IActionResult> TransferFunds(TransferFundsDto transferFundsDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var validationResult = await _transferFundsValidator.ValidateAsync(transferFundsDto);
+            if (validationResult.IsValid == false)
+                return BadRequest(validationResult.Errors);
 
             try
             {
@@ -94,10 +106,9 @@ namespace API.Controllers
         [HttpPost("deposit")]
         public async Task<IActionResult> Deposit(DepositDto depositDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var validationResult = await _depositValidator.ValidateAsync(depositDto);
+            if (validationResult.IsValid == false)
+                return BadRequest(validationResult.Errors);
 
             try
             {
@@ -117,10 +128,9 @@ namespace API.Controllers
         [HttpPost("withdraw")]
         public async Task<IActionResult> Withdraw(WithdrawDto withdrawDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var validationResult = await _withdrawValidator.ValidateAsync(withdrawDto);
+            if (validationResult.IsValid == false)
+                return BadRequest(validationResult.Errors);
 
             try
             {
