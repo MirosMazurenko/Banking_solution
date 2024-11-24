@@ -3,6 +3,7 @@ using API.Controllers;
 using API.DTOs;
 using API.Exceptions;
 using API.Repositories.Interfaces;
+using API.Validators;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -11,11 +12,27 @@ public class AccountControllerTests
 {
     private readonly Mock<IAccountService> _mockAccountService;
     private readonly AccountController _controller;
+    private readonly CreateAccountDtoValidator _createAccountValidator;
+    private readonly DepositDtoValidator _depositValidator;
+    private readonly TransferFundsDtoValidator _transferFundsValidator;
+    private readonly WithdrawDtoValidator _withdrawValidator;
+
 
     public AccountControllerTests()
     {
         _mockAccountService = new Mock<IAccountService>();
-        _controller = new AccountController(_mockAccountService.Object);
+        _createAccountValidator = new CreateAccountDtoValidator();
+        _depositValidator = new DepositDtoValidator();
+        _transferFundsValidator = new TransferFundsDtoValidator();
+        _withdrawValidator = new WithdrawDtoValidator();
+
+        _controller = new AccountController(
+            _mockAccountService.Object,
+            _createAccountValidator,
+            _depositValidator,
+            _transferFundsValidator,
+            _withdrawValidator
+        );
     }
 
     [Fact]

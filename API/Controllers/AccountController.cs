@@ -34,6 +34,7 @@ namespace API.Controllers
             _withdrawValidator = withdrawValidator;
         }
 
+
         [HttpGet]
         public async Task<IActionResult> ListAllAccounts()
         {
